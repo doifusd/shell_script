@@ -1,6 +1,12 @@
 #!/bin/bash
-phpId=`ps -ef|grep $1|awk '{print $2}'`
-totalMemory=0
+read -a process_name -p "enter process name such as nginx > " process_name
+
+if [ -z "$process_name" ]; then
+read -a process_name -p "enter process name such as nginx > " process_name
+fi
+
+phpId=`ps -ef|grep $process_name|awk '{print $2}'`
+totalMem=0
 totalProcess=0
 
 array=(${phpId//,/ })
@@ -8,24 +14,24 @@ for var in ${array[@]}
 do
     if [ -f "/proc/$var/smaps" ] ;then
        tmp=`grep Pss "/proc/$var/smaps"|awk '{total+=$2}; END {printf "%d", total }'`
-       totalMemory=$((${totalMemory} + $tmp))
+       totalMem=$((${totalMem} + $tmp))
        totalProcess=$((${totalProcess} + 1))
     fi
 done
 
-vagMem=$[$totalMemory / $totalProcess]
-msg="总计使用物理内存是: "
-if [ $totalMemory > 1000 ];then
-totalMemory=$[$totalMemory / 1024]
-totalMemory="${totalMemory} MB"
+avgMem=$[$totalMem / $totalProcess]
+msg="total use physical memory is : "
+if [ $totalMem -gt "1000" ];then
+totalMem=$[$totalMem / 1024]
+totalMem="${totalMem} MB"
 else
-totalMemory="${totalMemory} KB"
+totalMem="${totalMem} KB"
 fi
 
-echo "#####################进程内存统计################################"
-echo ${msg} ${totalMemory}
+echo "################### ${process_name} process memory #####################"
+echo ${msg} ${totalMem}
 
-echo "总计执行进程数是: ${totalProcess} 个"
+echo "total process num is : ${totalProcess} "
 
-echo "平均每个进程使用内存大小是: ${vagMem} KB"
+echo "avg memory per process is : ${avgMem} KB"
 
