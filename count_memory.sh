@@ -1,6 +1,5 @@
 #!/bin/bash
-phpId=`ps -ef|grep php|awk '{print $2}'`
-#phpId=$1
+phpId=`ps -ef|grep $1|awk '{print $2}'`
 totalMemory=0
 totalProcess=0
 
